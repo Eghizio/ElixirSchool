@@ -9,6 +9,17 @@ defmodule Exercises.Exercise3 do
   """
   def wait_and_print() do
     # write your code here
+
+    spawn(fn ->
+      Process.register(self(), :hello)
+
+      receive do
+        :ping -> IO.inspect(:ping)
+      after
+        1_000 -> :ok
+      end
+    end)
+
   end
 
   @doc """
@@ -22,5 +33,22 @@ defmodule Exercises.Exercise3 do
   """
   def terminate_process() do
     # write your code here
+
+    spawn(fn ->
+      Process.register(self(), :hello)
+
+      receive do
+        :ping -> IO.inspect(:ping)
+      after
+        1_000 -> :ok
+      end
+    end)
+
+    spawn(fn ->
+      Process.sleep(300)
+      pid = Process.whereis(:hello)
+      Process.exit(pid, :shutdown)
+    end)
+
   end
 end

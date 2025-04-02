@@ -1,13 +1,13 @@
 defmodule Exercises.Exercise6 do
   @doc """
-   - Spawn a new process, 
-     - register it under :world name, 
-     - start monitoring :hello process by :world process, 
+   - Spawn a new process,
+     - register it under :world name,
+     - start monitoring :hello process by :world process,
      - after 1 second send :bad_msg to :hello process
      - wait for down msg from :hello process and send it to :test process
      - wait for next message
-   - spawn a new unregistered process, 
-      - wait 1500ms 
+   - spawn a new unregistered process,
+      - wait 1500ms
       - print ":world is alive!" if process :world is alive
       - print ":world is dead!" otherwise
    - explain why :world process is alive or dead
@@ -19,16 +19,43 @@ defmodule Exercises.Exercise6 do
     mix test --only test6
   """
   def process_monitor() do
-    _hello =
-      spawn(fn ->
-        Process.register(self(), :hello)
+    hello = spawn(fn ->
+      Process.register(self(), :hello)
 
-        receive do
-          :bad_msg -> raise("error")
-          :die_normally -> :ok
-        end
-      end)
+      receive do
+        :bad_msg -> raise("error")
+        :die_normally -> :ok
+      end
+    end)
 
     # write here your code
+    world = spawn(fn ->
+      Process.register(self(), :world)
+      Process.monitor(hello)
+
+      Process.sleep(1_000)
+      send(:hello, :bad_msg)
+
+      receive do
+        msg -> send(:test, msg)
+      end
+
+      receive do
+        _ -> :ok
+      end
+    end)
+
+    spawn(fn ->
+      Process.sleep(1_500)
+
+      msg = if Process.alive?(world) do
+        ":world is alive!"
+      else
+        ":world is dead!"
+      end
+
+      IO.inspect(msg)
+      send(:test, msg)
+    end)
   end
 end

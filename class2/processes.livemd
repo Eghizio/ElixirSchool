@@ -114,6 +114,7 @@ Process.alive?(pid) |> IO.inspect(label: "process alive?")
 send(pid, "Hello")
 Process.sleep(100)
 Process.alive?(pid) |> IO.inspect(label: "process alive?")
+# Process.info(pid)
 
 ```
 
@@ -201,6 +202,23 @@ end)
 Process.sleep(100)
 Process.whereis(:hello) |> IO.inspect(label: ":hello pid got by whereis")
 
+```
+
+```elixir
+# Test
+self_register = fn ->
+    IO.inspect(self(), label: "self pid")
+    Process.register(self(), :hello)
+    Process.sleep(300)
+end
+
+spawn(self_register)
+Process.sleep(100)
+Process.whereis(:hello) |> IO.inspect(label: ":hello pid got by whereis")
+
+spawn(self_register)
+Process.sleep(100)
+Process.whereis(:hello) |> IO.inspect(label: ":hello pid got by whereis")
 ```
 
 ### Communication cont.
@@ -424,6 +442,21 @@ for proc <- [:A, :B, :C] do
         pid -> Process.exit(pid, :kill)
       end).()
 end
+```
+
+```elixir
+pid_victim = spawn(fn -> 
+  Process.flag(:trap_exit, true)
+  receive do
+    msg -> IO.inspect(msg)
+  end
+end)
+
+spawn(fn ->
+  Process.link(pid_victim)
+  raise("error")
+end)
+
 ```
 
 ### Exercise 6 - 9

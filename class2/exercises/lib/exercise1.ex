@@ -9,5 +9,9 @@ defmodule Exercises.Exercise1 do
   """
   def send_to_pong() do
     # write your code here
+    spawn(fn ->
+      send(:ping, :pong)
+    end)
+
   end
 end

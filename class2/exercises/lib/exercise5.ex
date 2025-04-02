@@ -12,5 +12,18 @@ defmodule Exercises.Exercise5 do
   """
   def selective_receive() do
     # write your code here
+
+    spawn(fn ->
+      Process.register(self(), :hello)
+
+      receive do
+        :world -> send(:test, :world)
+      end
+
+      receive do
+        :hello -> send(:test, :hello)
+      end
+
+    end)
   end
 end
