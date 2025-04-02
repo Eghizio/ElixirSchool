@@ -11,5 +11,11 @@ defmodule Exercises.Exercise2 do
   """
   def create_registered_process() do
     # write your code here
+
+    spawn(fn ->
+      Process.register(self(), :hello)
+      Process.sleep(1_000)
+    end)
+
   end
 end
