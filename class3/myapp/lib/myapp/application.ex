@@ -3,9 +3,10 @@ defmodule MyApp.Application do
 
   # =====EXERCISE 5=====
   @impl true
-  def start(_type, _args) do
+  def start(type, args) do
     children = [
-      StackSupervisor
+      # StackSupervisor
+      MyApp.Supervisor # this will cause tests 2 & 3 fail
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

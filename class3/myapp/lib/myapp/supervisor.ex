@@ -7,8 +7,13 @@ defmodule MyApp.Supervisor do
 
   # =====EXERCISE 4=====
   @impl true
-  def init(_init_arg) do
-    children = []
+  def init(initial_state) do
+    children = [
+      %{
+        id: MyApp.ShopInventory,
+        start: {MyApp.ShopInventory, :start_link, [initial_state]}
+      }
+    ]
 
     Supervisor.init(children, strategy: :one_for_one)
   end
